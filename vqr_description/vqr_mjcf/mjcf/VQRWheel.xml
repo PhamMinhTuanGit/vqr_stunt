@@ -1,0 +1,240 @@
+<mujoco model="VQRWheel">
+  <!--
+    Hand-authored from source/rl_training's VQRWheel.urdf
+    (deep_robotics_model/VQRWheel/VQRWheel_urdf/urdf/VQRWheel.urdf), following the
+    same approach as VQR.xml (sibling legged robot): collision geometry is
+    PRIMITIVES matching the URDF's hand-tuned <collision> shapes; visual geometry
+    uses the real CAD meshes, decimated with trimesh's quadric decimation into
+    vqr_description/vqr_mjcf/meshes/ (torso ~560k faces -> ~24k, over MuJoCo's
+    200k-face STL decoder limit; hip/thigh/shank/wheel lightened too). Mass/inertia
+    are taken verbatim from the URDF's <inertial> tags either way.
+
+    Unlike VQR.xml, each leg ends in a continuous WHEEL joint instead of a fixed
+    FOOT; no joint range/limit on the wheel hinges (this is intentional, mirrors
+    the URDF's type="continuous").
+  -->
+  <default>
+    <default class="robot">
+      <default class="motor">
+        <joint />
+        <motor />
+      </default>
+      <default class="visual">
+        <geom material="visualgeom" contype="0" conaffinity="0" group="2" />
+      </default>
+      <default class="collision">
+        <geom material="collision_material" condim="3" contype="0" conaffinity="1" group="1" solref="0.005 1" friction="1 0.01 0.01" />
+        <equality solimp="0.99 0.999 1e-05" solref="0.005 1" />
+      </default>
+    </default>
+  </default>
+
+  <compiler angle="radian" />
+  <compiler autolimits="true"/>
+
+  <asset>
+    <material name="default_material" rgba="0.7 0.7 0.7 1" />
+    <material name="collision_material" rgba="0.0 0.4 0.8 0.2" />
+    <texture type="2d" name="checker" builtin="checker" rgb1="0.2 0.3 0.4" rgb2="0.9 0.9 0.9" width="500" height="500"/>
+    <material name="checker_mat" texture="checker" specular="1" shininess="1" texrepeat="15 15"/>
+
+    <mesh name="torso.STL" file="../meshes/torso.STL" />
+    <mesh name="fl_hip.STL" file="../meshes/hip.STL" />
+    <mesh name="fr_hip.STL" file="../meshes/hip.STL" scale="1 -1 1"/>
+    <mesh name="hl_hip.STL" file="../meshes/hip.STL" scale="-1 1 1"/>
+    <mesh name="hr_hip.STL" file="../meshes/hip.STL" scale="-1 -1 1"/>
+    <mesh name="fl_thigh.STL" file="../meshes/thigh.STL" />
+    <mesh name="fr_thigh.STL" file="../meshes/thigh.STL" scale="1 -1 1"/>
+    <mesh name="hl_thigh.STL" file="../meshes/thigh.STL" />
+    <mesh name="hr_thigh.STL" file="../meshes/thigh.STL" scale="1 -1 1"/>
+    <mesh name="fl_shank.STL" file="../meshes/shank.STL" />
+    <mesh name="fr_shank.STL" file="../meshes/shank.STL" scale="1 -1 1"/>
+    <mesh name="hl_shank.STL" file="../meshes/shank.STL" />
+    <mesh name="hr_shank.STL" file="../meshes/shank.STL" scale="1 -1 1"/>
+    <mesh name="wheel.STL" file="../meshes/wheel.STL" />
+  </asset>
+
+  <worldbody>
+
+    <geom name="floor" type="plane" size="10 10 0.1" pos="0 0 0" material="checker_mat"/>
+    <light directional="true" pos="-0.5 0.5 3" dir="0 0 -1"/>
+
+    <body name="TORSO" pos="0 0 1" quat="1 0 0 0" childclass="robot">
+      <freejoint name="floating_base" />
+      <site name="imu_site" pos="0 0 0" size="0.005" rgba="1 0 0 1"/>
+      <inertial pos="0 0 0" mass="17.46" diaginertia="0.241554 0.524066 0.447501"/>
+      <geom name="TORSO_collision" pos="0 0 0" type="box" size="0.35 0.04 0.09" class="collision" />
+      <geom name="TORSO_visual" pos="0 0 0" type="mesh" mesh="torso.STL" material="default_material" class="visual" />
+
+      <body name="FL_HIP" pos="0.1924 0.07 -0.0255" quat="1 0 0 0">
+        <joint name="FL_HipX_joint" type="hinge" ref="0.0" class="motor" range="-0.7854 0.7854" axis="-1 0 0" />
+        <inertial pos="0 0 0" mass="1" diaginertia="0.00078043 0.00068757 0.00078043" />
+        <geom name="FL_HIP_visual" pos="-0.056 0 0" quat="0 0 1 0" type="mesh" mesh="fl_hip.STL" material="default_material" class="visual" />
+        <body name="FL_THIGH" pos="0.056 0.03 0" quat="1 0 0 0">
+          <joint name="FL_HipY_joint" type="hinge" ref="0.0" class="motor" range="-3.4 2.4" axis="0 -1 0" />
+          <inertial pos="0 0.06 -0.08" mass="1.5" diaginertia="0.0104 0.0082 0.0033" />
+          <geom name="FL_THIGH_collision" pos="-0.01 0.1 -0.07" type="box" size="0.02 0.0225 0.12" class="collision" />
+          <geom name="FL_THIGH_visual" pos="0 0 0" type="mesh" mesh="fl_thigh.STL" material="default_material" class="visual" />
+          <body name="FL_SHANK" pos="0 0.094 -0.212" quat="1 0 0 0">
+            <joint name="FL_Knee_joint" type="hinge" ref="0.0" class="motor" range="0.8116 2.7663" axis="0 -1 0" />
+            <inertial pos="0 0.01 -0.08" mass="0.15" diaginertia="0.00089039 0.00090672 3.1266e-05" />
+            <geom name="FL_SHANK_collision" pos="0 0.01 -0.1" type="cylinder" size="0.015 0.06" class="collision" />
+            <geom name="FL_SHANK_visual" pos="0 0 0" type="mesh" mesh="fl_shank.STL" material="default_material" class="visual" />
+            <body name="FL_WHEEL" pos="0 0.0425 -0.213" quat="1 0 0 0">
+              <joint name="FL_WHEEL" type="hinge" class="motor" limited="false" axis="0 -1 0" />
+              <inertial pos="0 0 0" mass="1.2" diaginertia="0.0026443 0.0049686 0.0026443" />
+              <geom name="FL_WHEEL_collision" pos="0 0 0" quat="0.707070 0.707143 0 0" type="cylinder" size="0.091 0.02" class="collision" />
+              <geom name="FL_WHEEL_visual" pos="0 0 0" quat="0 0 0 1" type="mesh" mesh="wheel.STL" material="default_material" class="visual" />
+            </body>
+          </body>
+        </body>
+      </body>
+
+      <body name="FR_HIP" pos="0.1924 -0.07 -0.0255" quat="1 0 0 0">
+        <joint name="FR_HipX_joint" type="hinge" ref="0.0" class="motor" range="-0.7854 0.7854" axis="-1 0 0" />
+        <inertial pos="0 0 0" mass="1" diaginertia="0.00078043 0.00068757 0.00078043" />
+        <geom name="FR_HIP_visual" pos="-0.056 0 0" quat="0 0 1 0" type="mesh" mesh="fr_hip.STL" material="default_material" class="visual" />
+        <body name="FR_THIGH" pos="0.056 -0.03 0" quat="1 0 0 0">
+          <joint name="FR_HipY_joint" type="hinge" ref="0.0" class="motor" range="-3.4 2.4" axis="0 -1 0" />
+          <inertial pos="0 -0.06 -0.08" mass="1.5" diaginertia="0.0104 0.0082 0.0033" />
+          <geom name="FR_THIGH_collision" pos="-0.01 -0.1 -0.07" type="box" size="0.02 0.0225 0.12" class="collision" />
+          <geom name="FR_THIGH_visual" pos="0 0 0" type="mesh" mesh="fr_thigh.STL" material="default_material" class="visual" />
+          <body name="FR_SHANK" pos="0 -0.094 -0.212" quat="1 0 0 0">
+            <joint name="FR_Knee_joint" type="hinge" ref="0.0" class="motor" range="0.8116 2.7663" axis="0 -1 0" />
+            <inertial pos="0 -0.01 -0.08" mass="0.15" diaginertia="0.00089039 0.00090672 3.1266e-05" />
+            <geom name="FR_SHANK_collision" pos="0 -0.01 -0.1" type="cylinder" size="0.015 0.06" class="collision" />
+            <geom name="FR_SHANK_visual" pos="0 0 0" type="mesh" mesh="fr_shank.STL" material="default_material" class="visual" />
+            <body name="FR_WHEEL" pos="0 -0.0425 -0.213" quat="1 0 0 0">
+              <joint name="FR_WHEEL" type="hinge" class="motor" limited="false" axis="0 -1 0" />
+              <inertial pos="0 0 0" mass="1.2" diaginertia="0.0026443 0.0049686 0.0026443" />
+              <geom name="FR_WHEEL_collision" pos="0 0 0" quat="0.707070 0.707143 0 0" type="cylinder" size="0.091 0.02" class="collision" />
+              <geom name="FR_WHEEL_visual" pos="0 0 0" quat="1 0 0 0" type="mesh" mesh="wheel.STL" material="default_material" class="visual" />
+            </body>
+          </body>
+        </body>
+      </body>
+
+      <body name="HL_HIP" pos="-0.1924 0.07 -0.0255" quat="1 0 0 0">
+        <joint name="HL_HipX_joint" type="hinge" ref="0.0" class="motor" range="-0.7854 0.7854" axis="-1 0 0" />
+        <inertial pos="0 0 0" mass="1" diaginertia="0.00078043 0.00068757 0.00078043" />
+        <geom name="HL_HIP_visual" pos="0.056 0 0" quat="0 0 1 0" type="mesh" mesh="hl_hip.STL" material="default_material" class="visual" />
+        <body name="HL_THIGH" pos="-0.056 0.03 0" quat="1 0 0 0">
+          <joint name="HL_HipY_joint" type="hinge" ref="0.0" class="motor" range="-3.4 2.4" axis="0 -1 0" />
+          <inertial pos="0 0.06 -0.08" mass="1.5" diaginertia="0.0104 0.0082 0.0033" />
+          <geom name="HL_THIGH_collision" pos="-0.01 0.1 -0.07" type="box" size="0.02 0.0225 0.12" class="collision" />
+          <geom name="HL_THIGH_visual" pos="0 0 0" type="mesh" mesh="hl_thigh.STL" material="default_material" class="visual" />
+          <body name="HL_SHANK" pos="0 0.094 -0.212" quat="1 0 0 0">
+            <joint name="HL_Knee_joint" type="hinge" ref="0.0" class="motor" range="0.8116 2.7663" axis="0 -1 0" />
+            <inertial pos="0 0.01 -0.08" mass="0.15" diaginertia="0.00089039 0.00090672 3.1266e-05" />
+            <geom name="HL_SHANK_collision" pos="0 0.01 -0.1" type="cylinder" size="0.015 0.06" class="collision" />
+            <geom name="HL_SHANK_visual" pos="0 0 0" type="mesh" mesh="hl_shank.STL" material="default_material" class="visual" />
+            <body name="HL_WHEEL" pos="0 0.0425 -0.213" quat="1 0 0 0">
+              <joint name="HL_WHEEL" type="hinge" class="motor" limited="false" axis="0 -1 0" />
+              <inertial pos="0 0 0" mass="1.2" diaginertia="0.0026443 0.0049686 0.0026443" />
+              <geom name="HL_WHEEL_collision" pos="0 0 0" quat="0.707070 0.707143 0 0" type="cylinder" size="0.091 0.02" class="collision" />
+              <geom name="HL_WHEEL_visual" pos="0 0 0" quat="1 0 0 0" type="mesh" mesh="wheel.STL" material="default_material" class="visual" />
+            </body>
+          </body>
+        </body>
+      </body>
+
+      <body name="HR_HIP" pos="-0.1924 -0.07 -0.0255" quat="1 0 0 0">
+        <joint name="HR_HipX_joint" type="hinge" ref="0.0" class="motor" range="-0.7854 0.7854" axis="-1 0 0" />
+        <inertial pos="0 0 0" mass="1" diaginertia="0.00078043 0.00068757 0.00078043" />
+        <geom name="HR_HIP_visual" pos="0.056 0 0" quat="0 0 1 0" type="mesh" mesh="hr_hip.STL" material="default_material" class="visual" />
+        <body name="HR_THIGH" pos="-0.056 -0.03 0" quat="1 0 0 0">
+          <joint name="HR_HipY_joint" type="hinge" ref="0.0" class="motor" range="-3.4 2.4" axis="0 -1 0" />
+          <inertial pos="0 -0.06 -0.08" mass="1.5" diaginertia="0.0104 0.0082 0.0033" />
+          <geom name="HR_THIGH_collision" pos="-0.01 -0.1 -0.07" type="box" size="0.02 0.0225 0.12" class="collision" />
+          <geom name="HR_THIGH_visual" pos="0 0 0" type="mesh" mesh="hr_thigh.STL" material="default_material" class="visual" />
+          <body name="HR_SHANK" pos="0 -0.094 -0.212" quat="1 0 0 0">
+            <joint name="HR_Knee_joint" type="hinge" ref="0.0" class="motor" range="0.8116 2.7663" axis="0 -1 0" />
+            <inertial pos="0 -0.01 -0.08" mass="0.15" diaginertia="0.00089039 0.00090672 3.1266e-05" />
+            <geom name="HR_SHANK_collision" pos="0 -0.01 -0.1" type="cylinder" size="0.015 0.06" class="collision" />
+            <geom name="HR_SHANK_visual" pos="0 0 0" type="mesh" mesh="hr_shank.STL" material="default_material" class="visual" />
+            <body name="HR_WHEEL" pos="0 -0.0425 -0.213" quat="1 0 0 0">
+              <joint name="HR_WHEEL" type="hinge" class="motor" limited="false" axis="0 -1 0" />
+              <inertial pos="0 0 0" mass="1.2" diaginertia="0.0026443 0.0049686 0.0026443" />
+              <geom name="HR_WHEEL_collision" pos="0 0 0" quat="0.707070 0.707143 0 0" type="cylinder" size="0.091 0.02" class="collision" />
+              <geom name="HR_WHEEL_visual" pos="0 0 0" quat="1 0 0 0" type="mesh" mesh="wheel.STL" material="default_material" class="visual" />
+            </body>
+          </body>
+        </body>
+      </body>
+
+      <site name="TORSO_site" pos="0 0 0" quat="1 0 0 0" />
+      <camera name="front_camera" mode="track" fovy="90.0" quat="4.329780281177467e-17 4.329780281177466e-17 0.7071067811865475 0.7071067811865476" pos="0.0 2.0 0.5" />
+      <camera name="side_camera" mode="track" fovy="90.0" quat="-0.5 -0.4999999999999999 0.5 0.5000000000000001" pos="-2.0 0.0 0.5" />
+    </body>
+  </worldbody>
+
+  <actuator>
+    <!-- Leg ctrlrange = 60 Nm, wheel = 20 Nm; finalized to match
+         VQRWHEEL_CFG's actuator effort_limit (rl_training/assets/
+         deeprobotics.py), which was retuned to these same values. Both sit
+         between each motor's continuous and peak datasheet rating: leg motor
+         SEAF70A16NG01 (rl_training/SEAF70A16NG01...pdf) lists 输出端连续堵转扭矩
+         (continuous) = 16 Nm, 输出端峰值扭矩 (peak) = 96 Nm; wheel motor
+         SETZ70CI-1JB (rl_training/6109611805316420072.jpg) lists 额定扭矩
+         (rated) = 3 Nm, 峰值扭矩 (peak) = 24 Nm. The original continuous-rating
+         caps (16/3) proved insufficient: StandUpState's classical PD climb
+         from a lying-down pose (kp=80 legs) plateaued at ~28-30 deg tilt and
+         never reached stand_height_, confirmed via mj_inverse + headless
+         MuJoCo testing to be a genuine torque ceiling (sweeping kp up to 1000
+         did NOT help; torque was capped regardless of gain). Re-verified at
+         60/20: reaches z~=0.406m at only ~2 deg tilt, using at most ~23.6 Nm
+         (legs) / ~4.8 Nm (wheel); comfortable margin below both caps.
+         Real hardware implication: sustained operation above the continuous
+         rating (16/3) risks overheating the motors; fine for the few
+         seconds of a stand-up transient, not indefinite sustained load.
+         OLD values, for reference/rollback: leg "-16 16" (2026-09-03
+         continuous-rating retune, superseded) / "-84 84"/"-84 84"/"-150 150"
+         (pre-retune); wheel "-3.0 3.0" (continuous-rating retune,
+         superseded) / "-30 30" (pre-retune). -->
+    <motor name="FL_HipX_joint_ctrl" joint="FL_HipX_joint" class="motor" gear="1" ctrlrange="-60 60"/>
+    <motor name="FL_HipY_joint_ctrl" joint="FL_HipY_joint" class="motor" gear="1" ctrlrange="-60 60"/>
+    <motor name="FL_Knee_joint_ctrl" joint="FL_Knee_joint" class="motor" gear="1" ctrlrange="-60 60"/>
+    <motor name="FL_WHEEL_ctrl" joint="FL_WHEEL" class="motor" gear="1" ctrlrange="-20 20"/>
+    <motor name="FR_HipX_joint_ctrl" joint="FR_HipX_joint" class="motor" gear="1" ctrlrange="-60 60"/>
+    <motor name="FR_HipY_joint_ctrl" joint="FR_HipY_joint" class="motor" gear="1" ctrlrange="-60 60"/>
+    <motor name="FR_Knee_joint_ctrl" joint="FR_Knee_joint" class="motor" gear="1" ctrlrange="-60 60"/>
+    <motor name="FR_WHEEL_ctrl" joint="FR_WHEEL" class="motor" gear="1" ctrlrange="-20 20"/>
+    <motor name="HL_HipX_joint_ctrl" joint="HL_HipX_joint" class="motor" gear="1" ctrlrange="-60 60"/>
+    <motor name="HL_HipY_joint_ctrl" joint="HL_HipY_joint" class="motor" gear="1" ctrlrange="-60 60"/>
+    <motor name="HL_Knee_joint_ctrl" joint="HL_Knee_joint" class="motor" gear="1" ctrlrange="-60 60"/>
+    <motor name="HL_WHEEL_ctrl" joint="HL_WHEEL" class="motor" gear="1" ctrlrange="-20 20"/>
+    <motor name="HR_HipX_joint_ctrl" joint="HR_HipX_joint" class="motor" gear="1" ctrlrange="-60 60"/>
+    <motor name="HR_HipY_joint_ctrl" joint="HR_HipY_joint" class="motor" gear="1" ctrlrange="-60 60"/>
+    <motor name="HR_Knee_joint_ctrl" joint="HR_Knee_joint" class="motor" gear="1" ctrlrange="-60 60"/>
+    <motor name="HR_WHEEL_ctrl" joint="HR_WHEEL" class="motor" gear="1" ctrlrange="-20 20"/>
+  </actuator>
+
+  <contact>
+    <exclude body1="TORSO" body2="FL_HIP" />
+    <exclude body1="FL_HIP" body2="FL_THIGH" />
+    <exclude body1="FL_THIGH" body2="FL_SHANK" />
+    <exclude body1="FL_SHANK" body2="FL_WHEEL" />
+    <exclude body1="TORSO" body2="FR_HIP" />
+    <exclude body1="FR_HIP" body2="FR_THIGH" />
+    <exclude body1="FR_THIGH" body2="FR_SHANK" />
+    <exclude body1="FR_SHANK" body2="FR_WHEEL" />
+    <exclude body1="TORSO" body2="HL_HIP" />
+    <exclude body1="HL_HIP" body2="HL_THIGH" />
+    <exclude body1="HL_THIGH" body2="HL_SHANK" />
+    <exclude body1="HL_SHANK" body2="HL_WHEEL" />
+    <exclude body1="TORSO" body2="HR_HIP" />
+    <exclude body1="HR_HIP" body2="HR_THIGH" />
+    <exclude body1="HR_THIGH" body2="HR_SHANK" />
+    <exclude body1="HR_SHANK" body2="HR_WHEEL" />
+  </contact>
+
+  <sensor>
+    <framepos name="TORSO_site_pos" objtype="site" objname="TORSO_site" />
+    <framequat name="TORSO_site_quat" objtype="site" objname="TORSO_site" />
+    <framelinvel name="TORSO_site_linvel" objtype="site" objname="TORSO_site" />
+    <frameangvel name="TORSO_site_angvel" objtype="site" objname="TORSO_site" />
+    <velocimeter name="TORSO_site_vel" site="TORSO_site" />
+    <accelerometer site="imu_site"/>
+    <gyro          site="imu_site"/>
+  </sensor>
+</mujoco>

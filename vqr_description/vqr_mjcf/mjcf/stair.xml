@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<mujoco model="stair_terrain">
+    <option gravity="0 0 -9.81" />
+
+    <asset>
+        <!-- lang tru tam giac (wedge) lam doc: mat cat tam giac vuong trong mp x-z,     -->
+        <!-- keo dai theo y (rong 5m). Canh thap (z=-0.25) o x=+0.5 (phia robot toi),    -->
+        <!-- canh cao (z=+0.25) o x=-0.5 (phia noi voi buc) -> doc len khi x giam.       -->
+        <mesh name="ramp_wedge" vertex="
+             0.5 -2.5 -0.25   0.5  2.5 -0.25
+            -0.5 -2.5 -0.25  -0.5  2.5 -0.25
+            -0.5 -2.5  0.25  -0.5  2.5  0.25
+        "/>
+    </asset>
+
+    <worldbody>
+        <!-- <geom name="floor" type="plane" pos="0 0 0" size="15 15 0.1" rgba="0.8 0.9 0.8 1"/> -->
+
+        <!-- khoi de robot leo len: cao 0.5m, sau 3m (huong di), rong 5m (ngang)          -->
+        <!-- co doc (ramp) o phia truoc de leo len, dat xa vi tri spawn cua robot (x=0)   -->
+        <!-- hon: doc bat dau tu x=-3 (cach spawn 3m), dinh doc noi khit voi mep buc.      -->
+        <body name="climb_block" pos="0 0 0">
+            <!-- doc dang khoi lang tru (wedge) dac: rise=0.5, run=1.0, goc ~26.565 deg -->
+            <geom name="climb_ramp" type="mesh" mesh="ramp_wedge" pos="-3.5 0 0.25" rgba="0.5 0.5 0.5 1"/>
+            <!-- buc: sau 3m, rong 5m, cao 0.5m -->
+            <geom name="climb_block" type="box" pos="-5.45 0 0.25" size="1.5 2.5 0.25" rgba="0.5 0.5 0.5 1"/>
+        </body>
+
+        <!-- stair: 10 bac, moi bac co chieu cao (rise) va chieu rong (run) khac nhau      -->
+        <!-- rise in [0.10, 0.25] m, run in [0.25, 0.30] m. Cac bac duoc dat khit nhau:    -->
+        <!-- canh sau (x) cua bac truoc = canh truoc cua bac sau, dinh (z) cua bac truoc = -->
+        <!-- day cua bac sau -> khong co khe ho ngang hay doc.                             -->
+        <body name="staircase" pos="0.8 0 0">
+            <!-- bac 1: rise=0.12, run=0.27 -->
+            <geom name="stair1"  type="box" pos="0.485  0 0.060" size="0.135 3.0 0.060" rgba="0.5 0.5 0.5 1"/>
+            <!-- bac 2: rise=0.18, run=0.30 -->
+            <geom name="stair2"  type="box" pos="0.770  0 0.210" size="0.150 3.0 0.090" rgba="0.5 0.5 0.5 1"/>
+            <!-- bac 3: rise=0.10, run=0.25 -->
+            <geom name="stair3"  type="box" pos="1.045  0 0.350" size="0.125 3.0 0.050" rgba="0.5 0.5 0.5 1"/>
+            <!-- bac 4: rise=0.22, run=0.28 -->
+            <geom name="stair4"  type="box" pos="1.310  0 0.510" size="0.140 3.0 0.110" rgba="0.5 0.5 0.5 1"/>
+            <!-- bac 5: rise=0.15, run=0.26 -->
+            <geom name="stair5"  type="box" pos="1.580  0 0.695" size="0.130 3.0 0.075" rgba="0.5 0.5 0.5 1"/>
+            <!-- bac 6: rise=0.25, run=0.29 -->
+            <geom name="stair6"  type="box" pos="1.855  0 0.895" size="0.145 3.0 0.125" rgba="0.5 0.5 0.5 1"/>
+            <!-- bac 7: rise=0.13, run=0.255 -->
+            <geom name="stair7"  type="box" pos="2.1275 0 1.085" size="0.1275 3.0 0.065" rgba="0.5 0.5 0.5 1"/>
+            <!-- bac 8: rise=0.20, run=0.285 -->
+            <geom name="stair8"  type="box" pos="2.3975 0 1.250" size="0.1425 3.0 0.100" rgba="0.5 0.5 0.5 1"/>
+            <!-- bac 9: rise=0.17, run=0.265 -->
+            <geom name="stair9"  type="box" pos="2.6725 0 1.435" size="0.1325 3.0 0.085" rgba="0.5 0.5 0.5 1"/>
+            <!-- bac 10: rise=0.24, run=0.295 -->
+            <geom name="stair10" type="box" pos="2.9525 0 1.640" size="0.1475 3.0 0.120" rgba="0.5 0.5 0.5 1"/>
+            <!-- san sau bac cuoi (landing), rise=0.15, dai 5m de robot di tiep -->
+            <geom name="stair11" type="box" pos="5.600  0 1.835" size="2.500 3.0 0.075" rgba="0.5 0.5 0.5 1"/>
+        </body>
+    </worldbody>
+</mujoco>

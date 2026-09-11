@@ -1,0 +1,4 @@
+<mujoco model="VQRWheel_stair">
+    <include file="VQRWheel.xml"/>
+    <include file="./stair.xml"/>
+</mujoco>
