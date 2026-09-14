@@ -1,3 +1,6 @@
 [submodule "third_party/pinocchio"]
 	path = third_party/pinocchio
 	url = https://github.com/stack-of-tasks/pinocchio.git
+[submodule "third_party/casadi"]
+	path = third_party/casadi
+	url = https://github.com/casadi/casadi.git
