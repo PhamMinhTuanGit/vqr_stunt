@@ -2,8 +2,14 @@ build
 *.zip
 .vscode
 
-third_party/*
+#third_party/*
 third_party/libtorch
 third_party/x30_motion_sdk
 **/tmp/*
 .venv/*
+third_party/install
+third_party/deep_robotics_model
+third_party/gamepad
+third_party/motion_sdk_deploy
+third_party/mujoco
+third_party/onnxruntime
