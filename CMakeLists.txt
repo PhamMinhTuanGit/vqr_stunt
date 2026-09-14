@@ -93,6 +93,7 @@ include_directories(
   ${MUJOCO_ROOT}/include
   controller/stand_4_wheel/include
   controller/stand_4_wheel/config
+  controller/stand_wheel/include
 )
 
 # ========== Pinocchio & Stand 4 Wheel QP ==========

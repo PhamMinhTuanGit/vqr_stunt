@@ -254,6 +254,8 @@ public:
             return StateName::kJointDamping;
         } else if (uc_ptr_->GetUserCommand().target_mode == int(RobotMotionState::RLControlMode)) {
             return StateName::kRLControl;
+        } else if (uc_ptr_->GetUserCommand().target_mode == int(RobotMotionState::YawTurnMode)) {
+            return StateName::kYawTurn;
         }
         return StateName::kQPBalance;
     }

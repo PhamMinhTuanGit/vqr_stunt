@@ -123,6 +123,9 @@ public:
                         if(input=='v'){
                             usr_cmd_.target_mode = int(RobotMotionState::QPBalanceMode);
                         }
+                        if(input=='y'){
+                            usr_cmd_.target_mode = int(RobotMotionState::YawTurnMode);
+                        }
                         if(input=='x'){
                             usr_cmd_.target_mode = int(RobotMotionState::LieDown);
                         }
@@ -134,6 +137,9 @@ public:
                     break;
                     case RobotMotionState::QPBalanceMode:
                     case RobotMotionState::RLControlMode:
+                        if(input=='y'){
+                            usr_cmd_.target_mode = int(RobotMotionState::YawTurnMode);
+                        }
                         if(input=='x'){
                             usr_cmd_.target_mode = int(RobotMotionState::LieDown);
                         }
@@ -164,6 +170,14 @@ public:
                             turnning_time_record = current_time;
                         }
                     break;
+                    case RobotMotionState::YawTurnMode:
+                        if(input=='y' || input=='v'){
+                            usr_cmd_.target_mode = int(RobotMotionState::QPBalanceMode);
+                        }
+                        if(input=='x'){
+                            usr_cmd_.target_mode = int(RobotMotionState::LieDown);
+                        }
+                    break;
                     default:
                         break;
                 }
@@ -173,7 +187,8 @@ public:
             // arrives) so a stale axis value can't survive an idle gap --
             // see the BUG FIX note above.
             if(msfb_.current_state == RobotMotionState::RLControlMode ||
-               msfb_.current_state == RobotMotionState::QPBalanceMode){
+               msfb_.current_state == RobotMotionState::QPBalanceMode ||
+               msfb_.current_state == RobotMotionState::YawTurnMode){
                 if(current_time - forward_time_record > 300.) usr_cmd_.forward_vel_scale = 0;
                 if(current_time - side_time_record > 300.) usr_cmd_.side_vel_scale = 0;
                 if(current_time - turnning_time_record > 300.) usr_cmd_.turnning_vel_scale = 0;

@@ -15,6 +15,7 @@ namespace types{
         LieDown         = 4,
         RLControlMode   = 6,
         QPBalanceMode   = 7,
+        YawTurnMode     = 8,
     };
 
     enum StateName{
@@ -26,6 +27,7 @@ namespace types{
         kRLControl    = 6,
         kQPBalance    = 7,
         kQpBalance    = 7,
+        kYawTurn      = 8,
     };
     
 

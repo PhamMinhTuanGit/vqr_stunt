@@ -16,6 +16,7 @@
 #include "joint_damping_state.hpp"
 #include "liedown_state.hpp"
 #include "qp_balance_state.hpp"
+#include "yaw_turn_state.hpp"
 
 // #ifdef USE_ONNX
 //     #include "rl_control_state_onnx.hpp"
@@ -78,6 +79,7 @@ private:
     std::shared_ptr<StateBase> joint_damping_controller_;
     std::shared_ptr<StateBase> liedown_controller_;
     std::shared_ptr<StateBase> qp_balance_controller_;
+    std::shared_ptr<StateBase> yaw_turn_controller_;
 
     StateName current_state_name_, next_state_name_;
 
@@ -141,6 +143,9 @@ private:
             }
             case StateName::kQPBalance:{
                 return qp_balance_controller_;
+            }
+            case StateName::kYawTurn:{
+                return yaw_turn_controller_;
             }
             default:{
                 // M20 parity (M20_sdk_deploy's own QwStateMachine::
@@ -228,6 +233,7 @@ public:
         joint_damping_controller_ = std::make_shared<JointDampingState>(robot_type, "joint_damping", data_ptr);
         liedown_controller_ = std::make_shared<LieDownState>(robot_type, "liedown_state", data_ptr);
         qp_balance_controller_ = std::make_shared<QPBalanceState>(robot_type, "qp_balance", data_ptr);
+        yaw_turn_controller_ = std::make_shared<YawTurnState>(robot_type, "yaw_turn", data_ptr);
 
         current_controller_ = idle_controller_;
         current_state_name_ = kIdle;

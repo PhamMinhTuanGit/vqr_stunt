@@ -157,6 +157,8 @@ public:
                 return StateName::kRLControl;
             }else if(uc_ptr_->GetUserCommand().target_mode == int(RobotMotionState::QPBalanceMode)){
                 return StateName::kQPBalance;
+            }else if(uc_ptr_->GetUserCommand().target_mode == int(RobotMotionState::YawTurnMode)){
+                return StateName::kYawTurn;
             }else if(uc_ptr_->GetUserCommand().target_mode == int(RobotMotionState::LieDown)){
                 return StateName::kLieDown;
             }else if(data_ptr_->default_active_state == StateName::kQPBalance){
