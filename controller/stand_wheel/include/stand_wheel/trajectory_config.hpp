@@ -9,15 +9,21 @@
 namespace stand_wheel {
 
 struct TrajectoryCostWeights {
-  double configuration = 10.0;
-  double velocity = 1.0;
-  double torque = 1e-4;
-  double contact_force = 1e-3;
-  double lateral_slip = 1.0;
+  double yaw_tracking = 50.0;
+  double base_xy = 20.0;
+  double leg_posture = 10.0;
+  double velocity = 1e-6;
+  double torque = 1e-8;
+  double contact_force = 1e-8;
+  double lateral_slip = 1e-6;
 };
 
 struct TrajectoryConfig {
-  double horizon = 0.5;
+  static constexpr double kDefaultYawTarget =
+      0.26179938779914943654;  // 15 degrees.
+
+  double yaw_target = kDefaultYawTarget;
+  double horizon = 1.0;
   int intervals = 20;
   double mu_roll = 0.8;
   double mu_lat = 0.5;

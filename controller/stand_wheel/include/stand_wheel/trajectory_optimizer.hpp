@@ -21,9 +21,16 @@ struct TrajectoryValidation {
   double initial_boundary_error = 0.0;
   double terminal_boundary_error = 0.0;
   double max_velocity = 0.0;
+  double max_wheel_speed = 0.0;
   double max_torque = 0.0;
   double min_normal_force = 0.0;
+  double max_normal_force = 0.0;
+  double min_friction_margin = 0.0;
   double max_lateral_slip = 0.0;
+  double achieved_yaw = 0.0;
+  double yaw_error = 0.0;
+  double max_base_xy_drift = 0.0;
+  double max_roll_pitch = 0.0;
 };
 
 struct StaticTrajectorySolution {
@@ -31,6 +38,11 @@ struct StaticTrajectorySolution {
   std::string solver_status;
   int iterations = -1;
   double objective = 0.0;
+  double initial_objective = 0.0;
+  double initial_max_equality_violation = 0.0;
+  double initial_max_inequality_violation = 0.0;
+  double final_inf_pr = 0.0;
+  double final_inf_du = 0.0;
   int num_variables = 0;
   int num_equalities = 0;
   int num_inequalities = 0;

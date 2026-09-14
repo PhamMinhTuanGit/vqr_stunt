@@ -21,8 +21,7 @@ if(NOT STAND_WHEEL_IPOPT_PLUGIN_DIR)
     set(STAND_WHEEL_IPOPT_PLUGIN_DIR "${STAND_WHEEL_CASADI_ROOT}/lib")
   else()
     file(GLOB STAND_WHEEL_IPOPT_PLUGIN_CANDIDATES
-      "${CMAKE_CURRENT_SOURCE_DIR}/../../.venv/lib/python*/site-packages/casadi/libcasadi_nolpsol_ipopt.so"
-      "${CMAKE_CURRENT_SOURCE_DIR}/../../.venv/lib/python*/site-packages/casadi/libcasadi_nlpsol_ipopt.so"
+      "${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/casadi/build/lib/libcasadi_nlpsol_ipopt.so"
     )
     if(STAND_WHEEL_IPOPT_PLUGIN_CANDIDATES)
       list(GET STAND_WHEEL_IPOPT_PLUGIN_CANDIDATES 0
@@ -175,10 +174,10 @@ add_test(
   COMMAND skid_steer_contact_test ${STAND_WHEEL_VQR_URDF}
 )
 
-add_executable(stand_wheel_static_opt
+add_executable(stand_wheel_yaw_opt
   src/stand_wheel_static_opt.cpp
 )
-target_link_libraries(stand_wheel_static_opt PRIVATE
+target_link_libraries(stand_wheel_yaw_opt PRIVATE
   stand_wheel_trajectory_optimizer
 )
 
